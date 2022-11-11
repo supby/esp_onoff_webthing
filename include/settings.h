@@ -1,10 +1,11 @@
 #define DEVICE_NAME "esp_onoff_webthing"
 #define HARD_RESET_THRESHOLD_MS 5000
-#define RELAY_OFF LOW
-#define RELAY_ON HIGH
+// #define RELAY_OFF LOW
+// #define RELAY_ON HIGH
+// ESP-01 mode
+#define RELAY_OFF HIGH
+#define RELAY_ON LOW
 #define LED_OFF HIGH
 #define LED_ON LOW
-#define BUTTON_PIN 0
-#define BUTTON_CONFIG BUTTON_PUSHBUTTON | BUTTON_SET_PULLUP | BUTTON_DEFAULT_HIGH
-#define RELAY_PIN 12
-#define LED_PIN 13
+#define RELAY_PIN 0
+#define LED_PIN 2

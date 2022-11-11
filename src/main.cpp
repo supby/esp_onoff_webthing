@@ -17,19 +17,12 @@
 #include <ESP8266HTTPClient.h>
 #include <ESP8266httpUpdate.h>
 
-#include <SDFS.h>
-//#include <SDFSFormatter.h>
-
-// Others
-#include <DebounceEvent.h>
-
 #include "logging.h"
 #include "settings.h"
 
 
 
 WebThingAdapter* adapter;
-DebounceEvent* button;
 
 const char* relayTypes[] = {"OnOffSwitch", nullptr};
 ThingDevice relay("relay", DEVICE_NAME, relayTypes);
@@ -41,7 +34,6 @@ bool lastOn = false;
 
 // Prototypes
 void toggleRelay(bool enabled);
-void handleButton();
 
 void setupWebThing(String deviceName) {
   adapter = new WebThingAdapter(deviceName, WiFi.localIP());
@@ -67,7 +59,7 @@ void setupWiFi(String deviceName) {
 
     while (!WiFi.smartConfigDone()) {
       delay(1000);
-      digitalWrite(LED_BUILTIN, blink ? HIGH : LOW);
+      digitalWrite(LED_PIN, blink ? HIGH : LOW);
       blink = !blink;
     }
   }
@@ -76,7 +68,7 @@ void setupWiFi(String deviceName) {
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
-    digitalWrite(LED_BUILTIN, blink ? HIGH : LOW);
+    digitalWrite(LED_PIN, blink ? HIGH : LOW);
     blink = !blink;
   }
 
@@ -85,8 +77,7 @@ void setupWiFi(String deviceName) {
   digitalWrite(LED_BUILTIN, HIGH);
 }
 
-void checkProp() {  
-  handleButton();
+void checkProp() {
   
   MDNS.update();
 
@@ -106,9 +97,6 @@ void setup() {
   
   Serial.begin(115200);
   INFO_PRINTLN("\n");
-
-  // inputs
-  pinMode(BUTTON_PIN, INPUT);
 
   // outputs
   pinMode(RELAY_PIN, OUTPUT);
@@ -132,40 +120,12 @@ void setup() {
   INFO_PRINTLN(WiFi.localIP());
 
   setupWebThing(deviceName);
-
-  button = new DebounceEvent(BUTTON_PIN, BUTTON_CONFIG);
+  
   checkPropTimer.attach(1, checkProp);
 }
 
 void loop() {
   
-}
-
-void handleButton() {
-  if (unsigned int event = button->loop()) {
-    if (event == EVENT_RELEASED) {
-      switch (button->getEventCount()) {
-        case 1:
-          if (button->getEventLength() >= HARD_RESET_THRESHOLD_MS) {
-            INFO_PRINTLN("Hard reset triggered");
-
-            WiFi.disconnect();
-            delay(3000);
-            ESP.reset();
-          } else {
-            DEBUG_PRINTLN("Built-in button will change relay state");
-            bool nextOn = !lastOn;
-
-            toggleRelay(nextOn);
-
-            ThingPropertyValue state;
-            state.boolean = nextOn;
-            relayOn.setValue(state);
-          }
-          break;
-      }
-    }
-  }
 }
 
 void toggleRelay(bool enabled) {
