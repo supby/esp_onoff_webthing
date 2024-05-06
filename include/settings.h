@@ -1,4 +1,4 @@
-#define DEVICE_NAME "esp_onoff_webthing"
+#define DEVICE_NAME "esp-onoff-webthing"
 #define HARD_RESET_THRESHOLD_MS 5000
 // #define RELAY_OFF LOW
 // #define RELAY_ON HIGH
@@ -7,5 +7,5 @@
 #define RELAY_ON LOW
 #define LED_OFF HIGH
 #define LED_ON LOW
-#define RELAY_PIN 0
+#define RELAY_PIN 4
 #define LED_PIN 2
