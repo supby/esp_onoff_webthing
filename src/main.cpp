@@ -3,6 +3,7 @@
 
 #include <Arduino.h>
 #include <ArduinoJson.h>
+#include <Ticker.h>
 
 #include "logging.h"
 #include "settings.h"
@@ -10,23 +11,21 @@
 #include "wifi.h"
 #include "webthing.h"
 
+Ticker updateThingTimer;
 
 void setup() {
-
-  delay(1000);
-  Serial.begin(115200);
-  INFO_PRINTLN("\n");
-
   // outputs
   pinMode(RELAY_PIN, OUTPUT);
   pinMode(LED_PIN, OUTPUT);
 
   digitalWrite(RELAY_PIN, RELAY_OFF);
-
-
   digitalWrite(LED_PIN, LED_ON);
-  delay(500);
-  digitalWrite(LED_PIN, LED_OFF);
+  
+  delay(1000);
+
+  Serial.begin(9600);
+  while(!Serial && !Serial.available()){}
+  INFO_PRINTLN("\n");
 
   String deviceName(DEVICE_NAME);
   deviceName.concat("-");
@@ -46,9 +45,10 @@ void setup() {
   setupWebThing(deviceName);
 
   setupOTA(deviceName.c_str());
+
+  updateThingTimer.attach_ms(THING_ADAPTER_UPDATE_MS, updateThing);
 }
 
 void loop() {
   ArduinoOTA.handle();
-  updateThingProperties();
 }

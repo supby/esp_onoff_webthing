@@ -3,4 +3,5 @@
 #include <Thing.h>
 
 void setupWebThing(String deviceName);
-void updateThingProperties();
+void updateThing();
+void onOffChanged(ThingPropertyValue newValue);
